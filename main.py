@@ -9,6 +9,21 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 def home():
     return render_template('home.html')
 
-@app.route("/about")
-def about():
-    return "<h1>About Page</h1>"
+@app.route("/merge")
+def merge():
+    return render_template('merge.html')
+
+@app.route("/split")
+def split():
+    return render_template('split.html')
+
+@app.route("/split_size")
+def split_size():
+    return render_template('split_size.html')
+
+@app.route("/rotate")
+def rotate():
+    return render_template('rotate.html')
+
+if __name__ == '__main__':
+    app.run(debug="True")
