@@ -1,0 +1,36 @@
+body{
+    background-color: #DCE1E3;
+    margin-left: 0px;
+}
+
+header{
+    color: #004E7C;
+    background-color: #04041e;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: left;
+    margin-top: 0px;
+}
+
+footer {
+    background-color: #04041e;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    color: #49969e;
+    text-align: left;
+}
+
+.nav-link {
+    color: #49969e;
+}
+
+.active-site{
+    font-weight: 2000;
+    color: #71c7d1;
+}
+
+form {
+    top: 150px;
+    margin-bottom: 50px;
+}
