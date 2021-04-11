@@ -1,3 +1,4 @@
+import os
 from flask import Flask, redirect, render_template, request, session
 
 app = Flask(__name__)
@@ -6,11 +7,19 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 @app.route("/")
-def home():
-    return render_template('home.html')
+def index():
+    return render_template('index.html')
 
-@app.route("/merge")
+@app.route("/merge", methods=["GET", "POST"])
 def merge():
+
+    if request.method == "POST":
+        if request.files:
+            pdf = request.files["pdf"]
+            print(pdf)
+
+            # return redirect(request.url)
+
     return render_template('merge.html')
 
 @app.route("/split")

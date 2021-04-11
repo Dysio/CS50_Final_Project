@@ -31,11 +31,36 @@
 
         <div class="container">
             {% block main %}{% endblock %}
+
+            {% if request.path != "/" %}
+                <div class="row">
+                    <div class="col">
+                        <h5>Upload an image</h5>
+                        <hr>
+
+                        <form action="{{ request.path }}" method="post" enctype="multipart/form-data">
+
+                            <div class="form-group">
+                                <label>Select pdf</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" name="pdf" id="pdf">
+                                    <label class="custom-file-label" for="pdf">Select pdf...</label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Upload</button>
+
+                        </form>
+
+                    </div>
+                </div>
+            {% endif %}
+
         </div>
 
         <footer class="footer">
             <div class="container">
-                2021 &copy; Dysio - Homepage
+                2021 &copy; Dysio - PDF Basic Editor
             </div>
         </footer>
     </body>
