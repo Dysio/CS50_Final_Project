@@ -3,7 +3,7 @@ import os
 def directory_check(dir_path):
     """Function check if directory exist if not it will create it"""
     if os.path.isdir(dir_path):
-        print("exist")
+        print("Directory exist")
         return True
     else:
         dir_name = dir_path.split('\\')[-1]

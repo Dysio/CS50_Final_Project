@@ -36,24 +36,27 @@ def merge():
             directory_check(dir_path)
             files_check(dir_path)
 
-            pdf = request.files["pdf"]
-            print(pdf)
+            uploaded_pdfs = request.files.getlist("pdf")
+            print(f"Pdfs: {uploaded_pdfs}")
 
-            if pdf.filename == '':
-                print('No selected file')
-                return redirect(request.url)
+            for pdf in uploaded_pdfs:
+                if pdf.filename == '':
+                    print('No selected file')
+                    return redirect(request.url)
 
-            if allowed_extensions(pdf.filename):
-                filename = secure_filename(pdf.filename)
+                if allowed_extensions(pdf.filename):
+                    filename = secure_filename(pdf.filename)
 
-                pdf.save(os.path.join(app.config['PDF_UPLOADS'], filename))
-                print("pdf saved")
+                    pdf.save(os.path.join(app.config['PDF_UPLOADS'], filename))
+                    print("pdf saved")
 
-                return redirect(request.url)
+                    # return redirect(request.url)
 
-            else:
-                print("That file extension is not allowed")
-                return redirect(request.url)
+                else:
+                    print("That file extension is not allowed")
+                    return redirect(request.url)
+
+            return redirect(request.url)
 
     return render_template('merge.html')
 
