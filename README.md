@@ -1,2 +1,4 @@
 ### CS50 course: Week 10 Final Project
-,Mama dała córce bułkę nasmaowan
+
+Project is a website witch allows to edit pdf files. 
+It was created with Flask framework.

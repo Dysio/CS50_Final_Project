@@ -19,7 +19,7 @@ def files_check(dir_path):
     else:
         for file in os.listdir(dir_path):
             file = os.path.join(dir_path, file)
-            print(file)
+            # print(file)
             os.remove(file)
         return "Directory cleaned"
 
