@@ -1,7 +1,9 @@
 import os
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, \
+    send_file, send_from_directory, safe_join, abort
 from helpers import directory_check, files_check
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
+import werkzeug
 
 from PyPDF2 import PdfFileMerger
 
@@ -44,6 +46,7 @@ def merge():
 
             uploaded_pdfs = request.files.getlist("pdf")
             print(f"Pdfs: {uploaded_pdfs}")
+            print(type(uploaded_pdfs))
 
             for pdf in uploaded_pdfs:
                 if pdf.filename == '':
@@ -51,12 +54,10 @@ def merge():
                     return redirect(request.url)
 
                 if allowed_extensions(pdf.filename):
-                    filename = secure_filename(pdf.filename)
+                    filename = werkzeug.utils.secure_filename(pdf.filename)
 
                     pdf.save(os.path.join(app.config['PDF_UPLOADS'], filename))
                     print(f"pdf {filename} saved")
-
-                    # return redirect(request.url)
 
                 else:
                     print("That file extension is not allowed")
@@ -65,16 +66,22 @@ def merge():
             # Merging pdfs
             pdf_merger = PdfFileMerger()
             for pdf in os.listdir(dir_path_uploads):
-                # print(pdf)
-                # print(os.path.join(app.config['PDF_UPLOADS'], pdf))
-                # pdf_merger.append(str(pdf))
-                pdf_merger.append(str(os.path.join(app.config['PDF_UPLOADS'], pdf)))
+                pdf_merger.append(str(os.path.join(app.config['PDF_UPLOADS'], pdf)), import_bookmarks=False)
 
-            file_path = str(os.path.join(app.config['PDF_DOWNLOADS'], "Merged.pdf"))
+            merged_filename = "Merged.pdf"
+            file_path = str(os.path.join(app.config['PDF_DOWNLOADS'], merged_filename))
             with open(file_path, 'wb') as output_file:
                 pdf_merger.write(output_file)
 
+            pdf_merger.close()
+
             return redirect(request.url)
+
+            # return redirect(request.url)
+            # try:
+            #     return send_from_directory(app.config['PDF_DOWNLOADS'], filename=merged_filename, as_attachment=True)
+            # except FileNotFoundError:
+            #     abort(404)
 
     return render_template('merge.html')
 
