@@ -7,3 +7,16 @@
 {% block main %}
     <h1>Split</h1>
 {% endblock %}
+
+{% block form %}
+    <div class="form-group">
+        <label>Pass number of pages at which you want to split pdf file separated with comma i.e. 3,5,10</label>
+        <input type="text" class="form-control" id="pages" placeholder="3,5,10">
+        <p></p>
+        <p>Note: If you want to split whole document don't pass pages numbers just check box below</p>
+    </div>
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="allPagesCheck">
+        <label class="form-check-label" for="allPagesCheck">Split all pages</label>
+    </div>
+{% endblock %}

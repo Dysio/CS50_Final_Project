@@ -46,13 +46,18 @@
                                     <input type="file" class="custom-file-input" name="pdf" id="pdf" multiple>
                                     <label class="custom-file-label" for="pdf">Select pdf...</label>
                                 </div>
+
+                                {% block form %}{% endblock %}
+
                             </div>
 
                             <button type="submit" class="btn btn-primary">Upload</button>
 
                         </form>
 
+                        <a href="{{url_for('download_file')}}">Download pdf</a>
                     </div>
+
                 </div>
             {% endif %}
 
