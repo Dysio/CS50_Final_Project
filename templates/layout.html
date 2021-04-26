@@ -35,7 +35,7 @@
             {% if request.path != "/" %}
                 <div class="row">
                     <div class="col">
-                        <h5>Upload an image</h5>
+                        <h5>Upload a pdf file</h5>
                         <hr>
 
                         <form action="{{ request.path }}" method="post" enctype="multipart/form-data">
@@ -43,7 +43,11 @@
                             <div class="form-group">
                                 <label>Select pdf</label>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" name="pdf" id="pdf" multiple>
+                                    {% if request.path == "{{url_for('merge')}}" %}
+                                        <input type="file" class="custom-file-input" name="pdf" id="pdf" multiple>
+                                    {% else %}
+                                        <input type="file" class="custom-file-input" name="pdf" id="pdf">
+                                    {% endif %}
                                     <label class="custom-file-label" for="pdf">Select pdf...</label>
                                 </div>
 

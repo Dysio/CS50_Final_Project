@@ -1,7 +1,6 @@
 import os
 from flask import Flask, redirect, render_template, request, session, \
     send_file, send_from_directory, safe_join, abort
-from flask_caching import Cache
 
 from PyPDF2 import PdfFileMerger
 import werkzeug
@@ -11,15 +10,12 @@ from helpers import directory_check, files_delete
 
 app = Flask(__name__)
 
-cache = Cache()
-cache.init_app(app)
-
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
-dir_path_uploads = r"D:\SONY\Nauka\EDX\Week_10_Final_Project\static\pdf_uploads"
-dir_path_downloads = r"D:\SONY\Nauka\EDX\Week_10_Final_Project\static\pdf_downloads"
-app.config["PDF_UPLOADS"] = r"D:\SONY\Nauka\EDX\Week_10_Final_Project\static\pdf_uploads"
-app.config["PDF_DOWNLOADS"] = r"D:\SONY\Nauka\EDX\Week_10_Final_Project\static\pdf_downloads"
+dir_path_uploads = os.path.join(os.path.dirname(__file__), "static\pdf_uploads")
+dir_path_downloads = os.path.join(os.path.dirname(__file__), "static\pdf_downloads")
+app.config["PDF_UPLOADS"] = dir_path_uploads
+app.config["PDF_DOWNLOADS"] = dir_path_downloads
 app.config["ALLOWED_PDF_EXTENSIONS"] = ["PDF"]
 
 
@@ -41,8 +37,6 @@ def files_prepare():
         directory_check(dir_path_downloads)
         files_delete(dir_path_uploads)
         files_delete(dir_path_downloads)
-
-        cache.clear()
 
         uploaded_pdfs = request.files.getlist("pdf")
         print(f"Pdfs: {uploaded_pdfs}")
@@ -69,7 +63,6 @@ def index():
 
 @app.route("/download")
 def download_file():
-    # os.listdir(app.config["PDF_DOWNLOADS"])
     try:
         return send_from_directory(app.config['PDF_DOWNLOADS'], filename='Result.pdf', as_attachment=True,
                                    cache_timeout=0)
@@ -103,6 +96,7 @@ def merge():
 
 @app.route("/split")
 def split():
+
     return render_template('split.html')
 
 @app.route("/split_size")
