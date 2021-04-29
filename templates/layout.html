@@ -43,13 +43,19 @@
                             <div class="form-group">
                                 <label>Select pdf</label>
                                 <div class="custom-file">
-                                    {% if request.path == "{{url_for('merge')}}" %}
+                                    {% if request.path == "/merge" %}
                                         <input type="file" class="custom-file-input" name="pdf" id="pdf" multiple>
                                     {% else %}
                                         <input type="file" class="custom-file-input" name="pdf" id="pdf">
                                     {% endif %}
                                     <label class="custom-file-label" for="pdf">Select pdf...</label>
                                 </div>
+
+                                {% if "{{ url_for('split_size') }}" in request.path %}
+                                        <p>Split by size page</p>
+                                {% elif request.path == "{{ url_for('merge') }}" %}
+                                        <p>Merge</p>
+                                {% endif %}
 
                                 {% block form %}{% endblock %}
 
