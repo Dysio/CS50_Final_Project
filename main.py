@@ -5,6 +5,7 @@ from flask import Flask, redirect, render_template, request, session, \
 from pathlib import Path
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import werkzeug
+import zipfile
 
 from helpers import directory_check, files_delete
 
@@ -72,6 +73,16 @@ def download_file():
     except FileNotFoundError:
         abort(404)
 
+@app.route("/download_all")
+def download_all():
+    zipf = zipfile.ZipFile("Result.zip", 'w', zipfile.ZIP_DEFLATED)
+    print(os.listdir(dir_path_downloads))
+    for file in os.listdir(dir_path_downloads):
+        print(file)
+        zipf.write(os.path.join(dir_path_downloads, file))
+    zipf.close()
+    return send_file('Result.zip', mimetype='zip', attachment_filename='Result.zip', as_attachment=True)
+
 
 @app.route("/merge", methods=["GET", "POST"])
 def merge():
@@ -107,7 +118,6 @@ def split():
         pages = request.form.get("pages")
         print(f'pages: {pages}')
 
-        path = os.path.join(os.getcwd(), 'static\pdf_uploads')
         input_pdf = PdfFileReader(str(os.path.join(dir_path_uploads, os.listdir(dir_path_uploads)[0])))
         pdf_writer = PdfFileWriter()
         iterator = 0
