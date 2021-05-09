@@ -8,8 +8,7 @@ from pathlib import Path
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import werkzeug
 
-from helpers import apology, directory_check, files_delete
-
+from helpers import apology, directory_check, files_delete, page_size_dict_func, split_pages_by_height
 
 app = Flask(__name__)
 
@@ -165,6 +164,17 @@ def split():
 
 @app.route("/split_size", methods=["GET", "POST"])
 def split_size():
+    if request.method == "POST":
+        if not files_prepare() == 0:
+            return apology(files_prepare())
+
+        for pdf in os.listdir(dir_path_uploads):
+            split_pages_by_height(str(os.path.join(app.config['PDF_UPLOADS'], pdf)),
+                                  page_size_dict_func(str(os.path.join(app.config['PDF_UPLOADS'], pdf))),
+                                  output_path=str(os.path.join(app.config['PDF_DOWNLOADS'])))
+
+        return redirect(request.url)
+
     return render_template('split_size.html')
 
 @app.route("/rotate", methods=["GET", "POST"])

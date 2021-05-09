@@ -1,5 +1,6 @@
 import os
 
+from PyPDF2 import PdfFileReader, PdfFileWriter
 from flask import render_template
 
 def apology(message, code=400):
@@ -41,6 +42,67 @@ def files_delete(dir_path):
             os.remove(file)
 
         return "Directory cleaned"
+
+
+def page_size_dict_func(path):
+    pdf = PdfFileReader(open(path, 'rb'))
+    number_of_pages = pdf.getNumPages()
+    page_dim_dict = {}
+    page_size_dict = {}
+    for num in range(number_of_pages):
+        page_height = int(float(pdf.getPage(num).mediaBox.getHeight())*0.352)
+        page_width = int(float(pdf.getPage(num).mediaBox.getWidth())*0.352)
+        page_dim_dict[num] = [int(float(pdf.getPage(num).mediaBox.getHeight())*0.352),
+                              int(float(pdf.getPage(num).mediaBox.getWidth())*0.352)]
+        if page_height <= 298 and page_width <= 210:
+            try:
+                page_size_dict["A4"].append(num+1)
+            except KeyError:
+                page_size_dict["A4"] = [num+1]
+        elif page_height <= 298 and page_width <= 420:
+            try:
+                page_size_dict["A3"].append(num+1)
+            except KeyError:
+                page_size_dict["A3"] = [num+1]
+        elif page_height <= 297:
+            try:
+                page_size_dict["297"].append(num+1)
+            except KeyError:
+                page_size_dict["297"] = [num+1]
+        elif page_height <= 420:
+            try:
+                page_size_dict["420"].append(num+1)
+            except KeyError:
+                page_size_dict["420"] = [num+1]
+        elif page_height <= 610:
+            try:
+                page_size_dict["610"].append(num+1)
+            except KeyError:
+                page_size_dict["610"] = [num+1]
+        else:
+            try:
+                page_size_dict["big"].append(num+1)
+            except KeyError:
+                page_size_dict["big"] = [num+1]
+
+    return page_size_dict
+
+def split_pages_by_height(path, page_size_dict, output_path=False):
+    pdf = PdfFileReader(path)
+    if output_path:
+        output_path += "\\"
+        print(output_path)
+
+    for key in page_size_dict:
+        print(f"{key}:{page_size_dict[key]}")
+        pdf_writer = PdfFileWriter()
+        for page_num in page_size_dict[key]:
+            pdf_writer.addPage(pdf.getPage(page_num-1))
+            filename = path.split("\\")[-1][:-4]
+            output = output_path + f'{filename}_{key}.pdf'
+            with open(output, 'wb') as output_pdf:
+                pdf_writer.write(output_pdf)
+
 
 if __name__ == '__main__':
     dir_path = r"D:\SONY\Nauka\EDX\Week_10_Final_Project\static\pdf"
