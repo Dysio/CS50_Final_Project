@@ -1,13 +1,14 @@
 import os
+import shutil
+
 from flask import Flask, redirect, render_template, request, session, \
     send_file, send_from_directory, safe_join, abort
 
 from pathlib import Path
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import werkzeug
-import zipfile
 
-from helpers import directory_check, files_delete
+from helpers import apology, directory_check, files_delete
 
 
 app = Flask(__name__)
@@ -47,7 +48,8 @@ def files_prepare():
     for pdf in uploaded_pdfs:
         if pdf.filename == '':
             print('No selected file')
-            return redirect(request.url)
+            # return redirect(request.url)
+            return "No selected file!"
 
         if allowed_extensions(pdf.filename):
             filename = werkzeug.utils.secure_filename(pdf.filename)
@@ -57,7 +59,9 @@ def files_prepare():
 
         else:
             print("That file extension is not allowed")
-            return redirect(request.url)
+            # return redirect(request.url)
+            return "File extension not allowed"
+    return 0
 
 
 @app.route("/")
@@ -75,13 +79,9 @@ def download_file():
 
 @app.route("/download_all")
 def download_all():
-    zipf = zipfile.ZipFile("Result.zip", 'w', zipfile.ZIP_DEFLATED)
-    print(os.listdir(dir_path_downloads))
-    for file in os.listdir(dir_path_downloads):
-        print(file)
-        zipf.write(os.path.join(dir_path_downloads, file))
-    zipf.close()
-    return send_file('Result.zip', mimetype='zip', attachment_filename='Result.zip', as_attachment=True)
+    shutil.make_archive('Result', 'zip', os.path.join(os.path.dirname(__file__), "static\pdf_downloads"))
+    return send_file('Result.zip', mimetype='zip', attachment_filename='Result.zip', as_attachment=True,
+                     cache_timeout=0)
 
 
 @app.route("/merge", methods=["GET", "POST"])
@@ -90,7 +90,8 @@ def merge():
     if request.method == "POST":
 
         if request.files:
-            files_prepare()
+            if not files_prepare():
+                return apology(files_prepare())
 
             # Merging pdfs
             pdf_merger = PdfFileMerger()
@@ -113,18 +114,27 @@ def merge():
 @app.route("/split", methods=['GET', 'POST'])
 def split():
     if request.method == "POST":
-        files_prepare()
+        if not files_prepare() == 0:
+            return apology(files_prepare())
 
         pages = request.form.get("pages")
+        all_pages = request.form.get("allPagesCheck")
         print(f'pages: {pages}')
+        print(f'all_pages: {all_pages}')
 
         input_pdf = PdfFileReader(str(os.path.join(dir_path_uploads, os.listdir(dir_path_uploads)[0])))
         pdf_writer = PdfFileWriter()
         iterator = 0
         num_of_pages = input_pdf.getNumPages()
         save_path = os.path.join(dir_path_downloads)
-        page_split = [int(i) for i in pages.split(',')]
-        print(page_split)
+
+        if all_pages == "on":
+            print("All pages had to be split")
+            # numeration of pages start from 1 to be more user friendly
+            page_split = [i for i in range(1, num_of_pages)]
+        else:
+            page_split = [int(i) for i in pages.split(',')]
+        print(f"pages to split: {page_split}")
 
         if page_split[-1] != num_of_pages:
             page_split.append(num_of_pages)
