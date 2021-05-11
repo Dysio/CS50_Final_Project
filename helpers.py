@@ -85,6 +85,9 @@ def page_size_dict_func(path):
             except KeyError:
                 page_size_dict["big"] = [num+1]
 
+    # close the file without it error 32 occur
+    pdf.stream.close()
+
     return page_size_dict
 
 def split_pages_by_height(path, page_size_dict, output_path=False):

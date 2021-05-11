@@ -9,8 +9,13 @@
 {% endblock %}
 
 {% block form %}
-        <label>Pass number of pages at which you want to split pdf file separated with comma i.e. 3,5,10</label>
-        <input type="text" class="form-control" name="pages" id="pages" placeholder="3,5,10">
+        <p>Pass number of pages which you want to rotate separated with comma i.e. 3,5,10</p>
+        <label>Pages rotate by 90</label>
+        <input type="text" class="form-control" name="pages90" id="pages" placeholder="3,5,10">
+        <label>Pages rotate by 180</label>
+        <input type="text" class="form-control" name="pages180" id="pages" placeholder="3,5,10">
+        <label>Pages rotate by 270</label>
+        <input type="text" class="form-control" name="pages270" id="pages" placeholder="3,5,10">
         <p></p>
         <p>Note: If you want to split whole document don't pass pages numbers just check box below</p>
 {% endblock %}

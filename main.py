@@ -89,7 +89,7 @@ def merge():
     if request.method == "POST":
 
         if request.files:
-            if not files_prepare():
+            if not files_prepare() == 0:
                 return apology(files_prepare())
 
             # Merging pdfs
@@ -132,7 +132,7 @@ def split():
             # numeration of pages start from 1 to be more user friendly
             page_split = [i for i in range(1, num_of_pages)]
         else:
-            page_split = [int(i) for i in pages.split(',')]
+            page_split = list(set(int(i) for i in pages.split(',')))
         print(f"pages to split: {page_split}")
 
         if page_split[-1] != num_of_pages:
@@ -142,8 +142,10 @@ def split():
             if type(num) is not int:
                 raise ValueError("You have to pass positive integer")
             if num > num_of_pages:
+                apology("Number out of range")
                 raise ValueError("Number out of range")
             if num < 0:
+                apology("Number must be positive integer")
                 raise ValueError("Number must be positive integer")
 
             for iterator in range(iterator, num_of_pages):
@@ -179,6 +181,16 @@ def split_size():
 
 @app.route("/rotate", methods=["GET", "POST"])
 def rotate():
+    if request.method == "POST":
+        if not files_prepare() == 0:
+            return apology(files_prepare())
+
+        pages90 = [int(i) for i in request.form.get("pages90").split(',')]
+        pages180 = request.form.get("pages180").split(',')
+        pages270 = request.form.get("pages270").split(',')
+
+        print(f"pages90: {pages90} \npages180: {pages180} \npages270: {pages270}")
+
     return render_template('rotate.html')
 
 if __name__ == '__main__':
