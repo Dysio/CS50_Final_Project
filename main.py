@@ -8,7 +8,7 @@ from pathlib import Path
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
 import werkzeug
 
-from helpers import apology, directory_check, files_delete, page_size_dict_func, split_pages_by_height
+from helpers import apology, directory_check, files_delete, page_size_dict_func, split_pages_by_height, number_check
 
 app = Flask(__name__)
 
@@ -131,22 +131,19 @@ def split():
             print("All pages had to be split")
             # numeration of pages start from 1 to be more user friendly
             page_split = [i for i in range(1, num_of_pages)]
-        else:
+        try:
             page_split = list(set(int(i) for i in pages.split(',')))
+        except ValueError:
+            return apology("Number of pages must be positive integer")
+
         print(f"pages to split: {page_split}")
 
         if page_split[-1] != num_of_pages:
             page_split.append(num_of_pages)
 
         for num in page_split:
-            if type(num) is not int:
-                raise ValueError("You have to pass positive integer")
-            if num > num_of_pages:
-                apology("Number out of range")
-                raise ValueError("Number out of range")
-            if num < 0:
-                apology("Number must be positive integer")
-                raise ValueError("Number must be positive integer")
+            if not number_check(num, num_of_pages) == 0:
+                return apology(number_check(num, num_of_pages))
 
             for iterator in range(iterator, num_of_pages):
                 page = input_pdf.getPage(iterator)
@@ -185,9 +182,14 @@ def rotate():
         if not files_prepare() == 0:
             return apology(files_prepare())
 
-        pages90 = [int(i) for i in request.form.get("pages90").split(',')]
-        pages180 = request.form.get("pages180").split(',')
-        pages270 = request.form.get("pages270").split(',')
+        try:
+            pages90 = [int(i) for i in request.form.get("pages90").split(',')]
+            pages180 = [int(i) for i in request.form.get("pages180").split(',')]
+            pages270 = [int(i) for i in request.form.get("pages270").split(',')]
+        except ValueError:
+            return apology("Number of pages must be positive integer")
+
+
 
         print(f"pages90: {pages90} \npages180: {pages180} \npages270: {pages270}")
 

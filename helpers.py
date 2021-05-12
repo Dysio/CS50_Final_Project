@@ -43,6 +43,18 @@ def files_delete(dir_path):
 
         return "Directory cleaned"
 
+def number_check(number, num_of_pages):
+    if type(number) is not int:
+        # raise ValueError("You have to pass positive integer")
+        return "You have to pass positive integer"
+    if number > num_of_pages:
+        apology("Number out of range")
+        # raise ValueError("Number out of range")
+        return "Number out of range"
+    if number < 0:
+        # raise ValueError("Number must be positive integer")
+        return "Number must be positive integer"
+    return 0
 
 def page_size_dict_func(path):
     pdf = PdfFileReader(open(path, 'rb'))
