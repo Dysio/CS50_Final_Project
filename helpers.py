@@ -51,7 +51,7 @@ def number_check(number, num_of_pages):
         apology("Number out of range")
         # raise ValueError("Number out of range")
         return "Number out of range"
-    if number < 0:
+    if number <= 0:
         # raise ValueError("Number must be positive integer")
         return "Number must be positive integer"
     return 0

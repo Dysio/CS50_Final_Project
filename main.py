@@ -183,15 +183,48 @@ def rotate():
             return apology(files_prepare())
 
         try:
-            pages90 = [int(i) for i in request.form.get("pages90").split(',')]
-            pages180 = [int(i) for i in request.form.get("pages180").split(',')]
-            pages270 = [int(i) for i in request.form.get("pages270").split(',')]
+            if request.form.get("pages90"):
+                pages90 = list(set([int(i) for i in request.form.get("pages90").split(',')]))
+            else:
+                pages90 = []
+            if request.form.get("pages180"):
+                pages180 = list(set([int(i) for i in request.form.get("pages180").split(',')]))
+            else:
+                pages180 = []
+            if request.form.get("pages270"):
+                pages270 = list(set([int(i) for i in request.form.get("pages270").split(',')]))
+            else:
+                pages270 = []
         except ValueError:
             return apology("Number of pages must be positive integer")
 
+        if pages90 == [] and pages180 == [] and pages270 == []:
+            return redirect(request.url)
 
+        pdf_reader = PdfFileReader(os.path.join(dir_path_uploads, os.listdir(dir_path_uploads)[0]))
+        pdf_writer = PdfFileWriter()
+        num_of_pages = pdf_reader.getNumPages()
+        filename = os.listdir(dir_path_uploads)[0].split('.')[0] + "_rotated.pdf"
+
+        for page_num in range(1, num_of_pages + 1):
+            if page_num in pages90:
+                page = pdf_reader.getPage(page_num - 1).rotateClockwise(90)
+            elif page_num in pages180:
+                page = pdf_reader.getPage(page_num - 1).rotateClockwise(180)
+            elif page_num in pages270:
+                page = pdf_reader.getPage(page_num - 1).rotateClockwise(270)
+            else:
+                page = pdf_reader.getPage(page_num - 1)
+            pdf_writer.addPage(page)
+
+        with open(dir_path_downloads + '\\' + filename, 'wb') as fh:
+            pdf_writer.write(fh)
+
+        pdf_reader.stream.close()
 
         print(f"pages90: {pages90} \npages180: {pages180} \npages270: {pages270}")
+
+        return redirect(request.url)
 
     return render_template('rotate.html')
 
