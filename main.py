@@ -1,8 +1,9 @@
 import os
+import dotenv
 import shutil
 
 from flask import Flask, redirect, render_template, request, session, \
-    send_file, send_from_directory, safe_join, abort
+    send_file, send_from_directory, safe_join, abort, flash
 
 from pathlib import Path
 from PyPDF2 import PdfFileMerger, PdfFileReader, PdfFileWriter
@@ -12,8 +13,17 @@ from helpers import apology, directory_check, files_delete, page_size_dict_func,
 
 app = Flask(__name__)
 
+# setting secret key
+dotenv_file = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
+
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.debug = os.environ.get("DEBUG")
+
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024
 dir_path_uploads = os.path.join(os.path.dirname(__file__), "static\pdf_uploads")
 dir_path_downloads = os.path.join(os.path.dirname(__file__), "static\pdf_downloads")
 app.config["PDF_UPLOADS"] = dir_path_uploads
@@ -47,6 +57,7 @@ def files_prepare():
     for pdf in uploaded_pdfs:
         if pdf.filename == '':
             print('No selected file')
+            # flash("No selected file", "error")
             # return redirect(request.url)
             return "No selected file!"
 
@@ -105,6 +116,7 @@ def merge():
             pdf_merger.close()
 
             print(os.listdir(app.config["PDF_DOWNLOADS"]))
+            flash("Files were merged succesfully", 'success')
             return redirect(request.url)
 
     return render_template('merge.html')
@@ -127,14 +139,22 @@ def split():
         num_of_pages = input_pdf.getNumPages()
         save_path = os.path.join(dir_path_downloads)
 
+        if num_of_pages == 1:
+            flash("Passed pdf file has one page and cannot be splitted", "error")
+            return redirect(request.url)
+
         if all_pages == "on":
             print("All pages had to be split")
             # numeration of pages start from 1 to be more user friendly
             page_split = [i for i in range(1, num_of_pages)]
-        try:
-            page_split = list(set(int(i) for i in pages.split(',')))
-        except ValueError:
-            return apology("Number of pages must be positive integer")
+        else:
+            try:
+                page_split = list(set(int(i) for i in pages.split(',')))
+                page_split.sort()
+            except ValueError:
+                flash("Passed numbers must be positive integers", "error")
+                return redirect(request.url)
+                # return apology("Number of pages must be positive integer")
 
         print(f"pages to split: {page_split}")
 
@@ -156,6 +176,7 @@ def split():
                     pdf_writer = PdfFileWriter()
                     break
 
+        flash("Files were splitted succesfully", 'success')
         return redirect(request.url)
 
     return render_template('split.html')
@@ -172,6 +193,7 @@ def split_size():
                                   page_size_dict_func(str(os.path.join(app.config['PDF_UPLOADS'], pdf))),
                                   output_path=str(os.path.join(app.config['PDF_DOWNLOADS'])))
 
+        flash("Files were splitted succesfully", 'success')
         return redirect(request.url)
 
     return render_template('split_size.html')
@@ -224,6 +246,7 @@ def rotate():
 
         print(f"pages90: {pages90} \npages180: {pages180} \npages270: {pages270}")
 
+        flash("Files were rotated succesfully", 'success')
         return redirect(request.url)
 
     return render_template('rotate.html')
