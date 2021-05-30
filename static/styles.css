@@ -1,3 +1,7 @@
+a.disabled {
+    pointer-events: none;
+}
+
 body{
     background-color: #DCE1E3;
     margin-left: 0px;
