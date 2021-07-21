@@ -19,6 +19,7 @@ def apology(message, code=400):
 
 def directory_check(dir_path):
     """Function check if directory exist if not it will create it"""
+
     if os.path.isdir(dir_path):
         print("Directory exist")
         return True
@@ -31,6 +32,7 @@ def directory_check(dir_path):
 
 def files_delete(dir_path):
     """Cleans passed directory"""
+
     print(dir_path)
     if len(os.listdir(dir_path)) == 0:
         print("Directory is empty")
@@ -44,6 +46,9 @@ def files_delete(dir_path):
         return "Directory cleaned"
 
 def number_check(number, num_of_pages):
+    """Simple check if passed argument is positive integer smaller than
+    total number of pages."""
+
     if type(number) is not int:
         return "You have to pass positive integer"
     if number > num_of_pages:
@@ -53,6 +58,10 @@ def number_check(number, num_of_pages):
     return 0
 
 def page_size_dict_func(path):
+    """Function creates a dictionary with info on page sizes.
+    Keys are page height format i.e. "A4","A3","297"
+    values are pages number from file."""
+
     pdf = PdfFileReader(open(path, 'rb'))
     number_of_pages = pdf.getNumPages()
     page_dim_dict = {}
@@ -98,7 +107,11 @@ def page_size_dict_func(path):
 
     return page_size_dict
 
+
 def split_pages_by_height(path, page_size_dict, output_path=False):
+    """Functions split document into several files
+     grouped by page height parameter"""
+
     pdf = PdfFileReader(path)
     if output_path:
         output_path += "\\"

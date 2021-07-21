@@ -10,7 +10,7 @@ There are five pages that consist four main functions to edit pdfs described bel
 
 1. **Home Page**
 
-⋅⋅⋅Welcome to DYSIO PDF EDITOR where you can edit your pdf files with some simple functions.
+<p>Welcome to DYSIO PDF EDITOR where you can edit your pdf files with some simple functions.</p>
 
 2. **Merge**
 
